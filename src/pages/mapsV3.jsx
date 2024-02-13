@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
@@ -14,8 +14,9 @@ import {
 import "@reach/combobox/styles.css";
 import "./mapsV3.css";
 import config from "../config";
+import Header from "./Header/Header";
 
-export default function Places() {
+export default function PlacesV3() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: config.googleMapsApiKey,
     libraries: ["places"],
@@ -31,13 +32,14 @@ function Map() {
 
   return (
     <>
+    <Header />
       <div className="places-container">
         <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} />
       </div>
       <div className="map-flex">
         <GoogleMap
           style={{ height: "100vh", width: "100%" }}
-          zoom={13}
+          zoom={15}
           center={center}
           mapContainerClassName="map-container"
         >

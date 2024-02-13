@@ -14,8 +14,9 @@ import {
 import "@reach/combobox/styles.css";
 import "./mapsV3.css";
 import config from "../config";
+import Header from "./Header/Header";
 
-export default function Places() {
+export default function PlacesV2() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: config.googleMapsApiKey,
     libraries: ["places"],
@@ -31,6 +32,7 @@ function Map() {
 
   return (
     <>
+    <Header />
       <div className="places-container">
         <PlacesAutocomplete setSelected={setSelected} />
       </div>
