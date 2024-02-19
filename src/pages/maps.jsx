@@ -10,7 +10,7 @@ import config from "../config";
 import Header from "./Header/Header";
 
 export default function Intro() {
-  const position = { lat: 44.0971, lng: 6.24067 };
+  const position = { lat: 44.09252, lng: 6.2324 };
   const [open, setOpen] = useState(false);
 
   return (
@@ -18,7 +18,7 @@ export default function Intro() {
     <Header />
     <APIProvider apiKey={config.googleMapsApiKey}>
       <div style={{ height: "100vh", width: "100%" }}>
-        <Map zoom={9} center={position} mapId={"e4e7d5ce8378df81"}>
+        <Map zoom={9} center={position} mapId={config.mapId}>
           <AdvancedMarker position={position} onClick={() => setOpen(true)}>
             <Pin
               background={"grey"}

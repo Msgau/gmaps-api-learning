@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
   getGeocode,
@@ -13,10 +13,10 @@ import {
 } from "@reach/combobox";
 import "@reach/combobox/styles.css";
 import "./mapsV3.css";
-import config from "../config";
-import Header from "./Header/Header";
+import config from "../../config";
+import Header from "../Header/Header";
 
-export default function PlacesV3() {
+export default function PlacesV2() {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: config.googleMapsApiKey,
     libraries: ["places"],
@@ -27,19 +27,19 @@ export default function PlacesV3() {
 }
 
 function Map() {
-  const [center, setCenter] = useState({ lat: 44.0971, lng: 6.24067 });
+  const center = useMemo(() => ({ lat: 43.45, lng: -80.49 }), []);
   const [selected, setSelected] = useState(null);
 
   return (
     <>
     <Header />
       <div className="places-container">
-        <PlacesAutocomplete setSelected={setSelected} setCenter={setCenter} />
+        <PlacesAutocomplete setSelected={setSelected} />
       </div>
       <div className="map-flex">
         <GoogleMap
           style={{ height: "100vh", width: "100%" }}
-          zoom={15}
+          zoom={10}
           center={center}
           mapContainerClassName="map-container"
         >
@@ -50,7 +50,7 @@ function Map() {
   );
 }
 
-const PlacesAutocomplete = ({ setSelected, setCenter }) => {
+const PlacesAutocomplete = ({ setSelected }) => {
   const {
     ready,
     value,
@@ -66,7 +66,6 @@ const PlacesAutocomplete = ({ setSelected, setCenter }) => {
     const results = await getGeocode({ address });
     const { lat, lng } = await getLatLng(results[0]);
     setSelected({ lat, lng });
-    setCenter({ lat, lng }); // Mettre à jour le centre de la carte avec les coordonnées sélectionnées
   };
 
   return (

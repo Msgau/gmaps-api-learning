@@ -1,0 +1,10 @@
+.openDay {
+    margin-right: 5px;
+  }
+  
+  .closedDay {
+    margin-right: 5px;
+    color: #aaa;
+    text-decoration: line-through;
+  }
+  

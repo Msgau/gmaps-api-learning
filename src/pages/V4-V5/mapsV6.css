@@ -1,0 +1,12 @@
+.pac-target-input {
+    margin: 10px auto;
+    width: 100%;
+}
+.autocomplete-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.map-container {
+    margin: auto;
+}
