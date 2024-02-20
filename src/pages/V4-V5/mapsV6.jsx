@@ -17,15 +17,18 @@ const API_KEY = config.googleMapsApiKey;
 
 const MapsV6 = () => {
   const [selectedPlace, setSelectedPlace] = useState(null);
+  const [selectedPosition, setSelectedPosition] = useState(null);
+  const [showUserLocation, setShowUserLocation] = useState(false); // Nouvelle variable d'état
+
   const position = { lat: 44.0971, lng: 6.24067 };
 
   return (
     <div>
       <Header />
-      <APIProvider apiKey={API_KEY}>
+      <APIProvider apiKey={API_KEY} version="weekly">
         <div style={{ height: "78vh", width: "90%" }} className="map-container">
-          <PlaceAutocompleteClassic onPlaceSelect={setSelectedPlace} />
-          <MapHandler place={selectedPlace} />
+          <PlaceAutocompleteClassic onPlaceSelect={setSelectedPosition} />
+          <MapHandler place={selectedPosition} />
           <Map
             zoom={14}
             center={position}
@@ -33,23 +36,30 @@ const MapsV6 = () => {
             // gestureHandling={"greedy"}
             // disableDefaultUI={true}
           >
-          <AdvancedMarker
-            position={position}
-            onClick={() =>
-              setSelectedPlace({
-                name: "I'm in Digne",
-                price: null,
-                position,
-              })
-            }
-          >
-            <Pin
-              background={"grey"}
-              borderColor={"green"}
-              glyphColor={"purple"}
-            />
-          </AdvancedMarker>
-          {selectedPlace && (
+            <AdvancedMarker
+              position={position}
+              onClick={() => setShowUserLocation(true)} // Mettre à jour showUserLocation à true lorsqu'il est cliqué
+            >
+              <Pin
+                background={"grey"}
+                borderColor={"green"}
+                glyphColor={"purple"}
+              />
+            </AdvancedMarker>
+
+            {showUserLocation && ( // Afficher la deuxième InfoWindow lorsque showUserLocation est true
+              <InfoWindow
+                position={position}
+                pixelOffset={new window.google.maps.Size(0, -25)}
+                onCloseClick={() => setShowUserLocation(false)} // Mettre à jour showUserLocation à false lorsqu'il est fermé
+              >
+                <div>
+                  <h3>Votre géolocalisation</h3>
+                </div>
+              </InfoWindow>
+            )}
+
+            {selectedPlace && (
               <InfoWindow
                 position={selectedPlace.position}
                 pixelOffset={new window.google.maps.Size(0, -30)}
@@ -58,7 +68,9 @@ const MapsV6 = () => {
                 <div>
                   <div>Note : {selectedPlace.rating}/5</div>
                   <h3>{selectedPlace.name}</h3>
-                  {selectedPlace.price && <p>Prix: {selectedPlace.price} €</p>}
+                  {selectedPlace.price && (
+                    <p>Prix: {selectedPlace.price} €</p>
+                  )}
                   <p>{selectedPlace.adress}</p>
                   <p className="openingDays">
                     Jours d'ouverture :{" "}
@@ -73,6 +85,7 @@ const MapsV6 = () => {
                     ].map((day) => {
                       const dayAbbreviation = day.substring(0, 3).toLowerCase();
                       const isOpenDay =
+                        selectedPlace.closing &&
                         !selectedPlace.closing.includes(dayAbbreviation);
                       return (
                         <span
@@ -97,9 +110,10 @@ const MapsV6 = () => {
 };
 
 const Markers = ({ points, setSelectedPlace }) => {
-    return (
-      <>
-        {points.map(({ name, price, adress, rating, closing, lat, lng, key }) => (
+  return (
+    <>
+      {points.map(
+        ({ name, price, adress, rating, closing, lat, lng, key }) => (
           <AdvancedMarker
             position={{ lat, lng }}
             key={key}
@@ -116,9 +130,10 @@ const Markers = ({ points, setSelectedPlace }) => {
           >
             <span style={{ fontSize: "2rem" }}>☕</span>
           </AdvancedMarker>
-        ))}
-      </>
-    );
-  };
-  
+        )
+      )}
+    </>
+  );
+};
+
 export default MapsV6;
