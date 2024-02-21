@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { APIProvider, Map } from "@vis.gl/react-google-maps";
 import config from "../../config";
 import PlaceAutocompleteClassic from "../../components/PlaceAutoComplete";
-import MapHandler from "./map-handler";
+import MapHandler from "../map-handler";
 import Header from "../Header/Header";
 import './mapsV6.css';
 const API_KEY = config.googleMapsApiKey;

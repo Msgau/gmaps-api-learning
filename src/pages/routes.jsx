@@ -8,6 +8,7 @@ import PlacesV3 from './V2-V3/mapsV3.jsx';
 import MapsV4 from './V4-V5/mapsV4.jsx';
 import MapsV5 from './V4-V5/mapsV5.jsx';
 import MapsV6 from './V4-V5/mapsV6.jsx';
+import MapsV7 from './V7-V8/mapsV7.jsx';
 
 function RouteConfiguration() {
 
@@ -27,6 +28,7 @@ function RouteConfiguration() {
             <Route path="/V4" element={<MapsV4 />} />
             <Route path="/V5" element={<MapsV5 />} />
             <Route path="/V6" element={<MapsV6 />} />
+            <Route path="/V7" element={<MapsV7 />} />
           </Routes>
         </Router>
   

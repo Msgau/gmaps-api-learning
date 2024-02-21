@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   APIProvider,
   Map,
@@ -10,17 +10,70 @@ import config from "../../config";
 import PlaceAutocompleteClassic from "../../components/PlaceAutoComplete";
 import MapHandler from "../map-handler";
 import Header from "../Header/Header";
-import "./mapsV6.css";
+import "../V4-V5/mapsV6.css";
 import formatted from "../../data/cafés";
 
 const API_KEY = config.googleMapsApiKey;
 
-const MapsV6 = () => {
+const MapsV7 = () => {
+  
+  const [userLocation, setUserLocation] = useState(null);
+
+  useEffect(() => {
+    // Fonction pour obtenir la position de l'utilisateur
+    const getUserLocation = async () => {
+
+      // Utilisation de l'API du navigateur pour obtenir la position de l'utilisateur
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setUserLocation({
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            });
+          },
+          (error) => {
+            console.error('Erreur de géolocalisation:', error);
+            // Si l'utilisateur refuse la géolocalisation du navigateur, utiliser l'API Geolocation de Google Maps via une requête HTTP
+            if (error.code === error.PERMISSION_DENIED) {
+              getUserLocationWithGoogleMaps();
+            }
+          }
+        );
+      } else {
+        console.error("La géolocalisation n'est pas prise en charge par ce navigateur.");
+      }
+    };
+
+    // Fonction pour obtenir la position de l'utilisateur avec l'API Geolocation de Google Maps via une requête HTTP
+    const getUserLocationWithGoogleMaps = async () => {
+      try {
+        const response = await fetch(`https://www.googleapis.com/geolocation/v1/geolocate?key=${API_KEY}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ considerIp: true }),
+        });
+        const data = await response.json();
+        setUserLocation({
+          lat: data.location.lat,
+          lng: data.location.lng,
+        });
+      } catch (error) {
+        console.error('Erreur de géolocalisation avec Google Maps:', error);
+      }
+    };
+
+    // Appel de la fonction pour obtenir la position de l'utilisateur
+    getUserLocation();
+  }, []); // Exécuter une seule fois lors du montage du composant
+
+  const position = userLocation || { lat: 48.705047607421875, lng: 2.4535863399505615 };
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState(null);
-  const [showUserLocation, setShowUserLocation] = useState(false);
 
-  const position = { lat: 44.0971, lng: 6.24067 };
+  // const position = { lat: 44.0971, lng: 6.24067 };
 
   return (
     <div>
@@ -33,13 +86,11 @@ const MapsV6 = () => {
             zoom={14}
             center={position}
             mapId={config.mapId}
-            clickableIcons={false}
             // gestureHandling={"greedy"}
             // disableDefaultUI={true}
           >
             <AdvancedMarker
               position={position}
-              onClick={() => setShowUserLocation(true)}
             >
               <Pin
                 background={"grey"}
@@ -47,18 +98,6 @@ const MapsV6 = () => {
                 glyphColor={"purple"}
               />
             </AdvancedMarker>
-
-            {showUserLocation && ( // Afficher la deuxième InfoWindow lorsque showUserLocation est true
-              <InfoWindow
-                position={position}
-                pixelOffset={new window.google.maps.Size(0, -28)}
-                onCloseClick={() => setShowUserLocation(false)} // Mettre à jour showUserLocation à false lorsqu'il est fermé
-              >
-                <div>
-                  <h3>Votre géolocalisation</h3>
-                </div>
-              </InfoWindow>
-            )}
 
             {selectedPlace && (
               <InfoWindow
@@ -137,4 +176,4 @@ const Markers = ({ points, setSelectedPlace }) => {
   );
 };
 
-export default MapsV6;
+export default MapsV7;

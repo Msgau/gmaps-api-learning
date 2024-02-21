@@ -24,6 +24,9 @@ function Header() {
           <h2><NavLink to="/V6">
             V6
           </NavLink></h2>
+          <h2><NavLink to="/V7">
+            V7
+          </NavLink></h2>
       </div>
       <NavLink to="/addPlace" className="addPlace">
         Ajouter un emplacement
