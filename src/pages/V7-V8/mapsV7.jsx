@@ -10,6 +10,7 @@ import config from "../../config";
 import PlaceAutocompleteClassic from "../../components/PlaceAutoComplete";
 import MapHandler from "../map-handler";
 import Header from "../Header/Header";
+import HiddenContent from "../../components/HiddenContent"; // Import du composant HiddenContent
 import "../V4-V5/mapsV6.css";
 import formatted from "../../data/cafés";
 
@@ -72,8 +73,24 @@ const MapsV7 = () => {
   const position = userLocation || { lat: 48.705047607421875, lng: 2.4535863399505615 };
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [selectedPosition, setSelectedPosition] = useState(null);
+  
+// Fonction pour déterminer si le lieu est ouvert aujourd'hui
+const isOpenToday = () => {
+  if (!selectedPlace || !selectedPlace.closing) return false;
+  const currentDayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase().substring(0, 3); // Obtenez le jour de la semaine actuel (ex: "mon" pour lundi)
+  
+  // Si le lieu est ouvert tous les jours, il est ouvert sauf s'il est fermé aujourd'hui
+  if (selectedPlace.closing.includes("opn")) {
+    return !selectedPlace.closing.includes(currentDayOfWeek);
+  } else {
+    // Sinon, vérifiez si le jour actuel est spécifiquement un jour de fermeture
+    return !selectedPlace.closing.includes(currentDayOfWeek);
+  }
+};
 
-  // const position = { lat: 44.0971, lng: 6.24067 };
+
+  // Utilisation du résultat pour afficher le statut d'ouverture dans l'InfoWindow
+  const openStatus = isOpenToday() ? "ouvert aujourd'hui" : "fermé aujourd'hui";
 
   return (
     <div>
@@ -112,31 +129,38 @@ const MapsV7 = () => {
                     <p>Prix: {selectedPlace.price} €</p>
                   )}
                   <p>{selectedPlace.adress}</p>
-                  <p className="openingDays">
-                    Jours d'ouverture :{" "}
-                    {[
-                      "Lundi",
-                      "Mardi",
-                      "Mercredi",
-                      "Jeudi",
-                      "Vendredi",
-                      "Samedi",
-                      "Dimanche",
-                    ].map((day) => {
-                      const dayAbbreviation = day.substring(0, 3).toLowerCase();
-                      const isOpenDay =
-                        selectedPlace.closing &&
-                        !selectedPlace.closing.includes(dayAbbreviation);
-                      return (
-                        <span
-                          key={dayAbbreviation}
-                          className={isOpenDay ? "openDay" : "closedDay"}
-                        >
-                          {isOpenDay ? day : <s>{day}</s>}
-                        </span>
-                      );
-                    })}
-                  </p>
+                  {/* Afficher le statut d'ouverture */}
+                  <p>{openStatus}</p>
+                  {/* Utilisation du composant HiddenContent pour afficher/masquer les jours d'ouverture */}
+                  <HiddenContent
+                    collapseTitle="Jours d'ouverture"
+                    collapseDescription={
+                      <p>
+                        {[
+                          "Lundi",
+                          "Mardi",
+                          "Mercredi",
+                          "Jeudi",
+                          "Vendredi",
+                          "Samedi",
+                          "Dimanche",
+                        ].map((day) => {
+                          const dayAbbreviation = day.substring(0, 3).toLowerCase();
+                          const isOpenDay =
+                            selectedPlace.closing &&
+                            !selectedPlace.closing.includes(dayAbbreviation);
+                          return (
+                            <span
+                              key={dayAbbreviation}
+                              className={isOpenDay ? "openDay" : "closedDay"}
+                            >
+                              {isOpenDay ? day : <s>{day}</s>}
+                            </span>
+                          );
+                        })}
+                      </p>
+                    }
+                  />
                 </div>
               </InfoWindow>
             )}
