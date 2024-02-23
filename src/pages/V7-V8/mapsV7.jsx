@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   APIProvider,
   Map,
@@ -10,7 +10,7 @@ import config from "../../config";
 import PlaceAutocompleteClassic from "../../components/PlaceAutoComplete";
 import MapHandler from "../map-handler";
 import Header from "../Header/Header";
-import HiddenContent from "../../components/HiddenContent"; // Import du composant HiddenContent
+import HiddenContent from "../../components/HiddenContent";
 import "../V4-V5/mapsV6.css";
 import formatted from "../../data/cafés";
 
@@ -77,15 +77,13 @@ const MapsV7 = () => {
 // Fonction pour déterminer si le lieu est ouvert aujourd'hui
 const isOpenToday = () => {
   if (!selectedPlace || !selectedPlace.closing) return false;
-  const currentDayOfWeek = new Date().toLocaleDateString('en-US', { weekday: 'short' }).toLowerCase().substring(0, 3); // Obtenez le jour de la semaine actuel (ex: "mon" pour lundi)
-  
+  const currentDayOfWeek = new Date().toLocaleDateString('fr-FR', { weekday: 'short' }).toLowerCase().substring(0, 3);
   // Si le lieu est ouvert tous les jours, il est ouvert sauf s'il est fermé aujourd'hui
   if (selectedPlace.closing.includes("opn")) {
     return !selectedPlace.closing.includes(currentDayOfWeek);
-  } else {
-    // Sinon, vérifiez si le jour actuel est spécifiquement un jour de fermeture
-    return !selectedPlace.closing.includes(currentDayOfWeek);
-  }
+  } 
+  // Sinon, cela signifie qu'il est fermé certains jours, donc il est fermé si le jour actuel est spécifiquement un jour de fermeture
+  return !selectedPlace.closing.includes(currentDayOfWeek);
 };
 
 
